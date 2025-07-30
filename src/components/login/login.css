@@ -2,8 +2,8 @@
 
 .body {
 	font-family: Helvetica;
-	background: #619ae4;
     width: 100%;
+	align-content: center;
 }
 
 .header { 

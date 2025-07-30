@@ -22,6 +22,8 @@ import { auth } from ".";
 import { RegisterForm } from "./RegisterForm";
 import { loginUser } from "./Authentication/emailAuth";
 import { useNavigate } from "react-router-dom";
+import images from "../assets/images";
+import { ImageBackground } from "react-native";
 
 // Login using email/password
 
@@ -72,40 +74,46 @@ const Login = () => {
   };
 
   return (
-    <div className="body">
-      <div class="header">
-        <h1>Volleyball Assistant Login</h1>
-      </div>
-      <div>
-        <form>
-          <div class="group">
-            <input id="txtEmail" type="email" />
-            <label>Email</label>
-          </div>
-          <div class="group">
-            <input id="txtPassword" type="password" />
-            <label>Password</label>
-          </div>
-          <div id="divLoginError" class="group">
-            <div id="lblLoginErrorMessage" class="errorlabel">
-              Error message
+    <ImageBackground
+      source={images.myImage1}
+      style={{ width: "100%", height: "100%" }}
+      resizeMode="cover"
+    >
+      <div className="body">
+        <div class="header">
+          <h1>Volleyball Assistant Login</h1>
+        </div>
+        <div>
+          <form>
+            <div class="group">
+              <input id="txtEmail" type="email" />
+              <label>Email</label>
             </div>
-          </div>
-          <button
-            onClick={loginEmailPassword}
-            type="button"
-            class="button buttonBlue"
-          >
-            Log in
-          </button>
-          <Link to="/RegisterForm">
-            <div variant="outlined" className="teamsList">
-              "Sign Up"
+            <div class="group">
+              <input id="txtPassword" type="password" />
+              <label>Password</label>
             </div>
-          </Link>
-        </form>
+            <div id="divLoginError" class="group">
+              <div id="lblLoginErrorMessage" class="errorlabel">
+                Error message
+              </div>
+            </div>
+            <button
+              onClick={loginEmailPassword}
+              type="button"
+              class="button buttonBlue"
+            >
+              Log in
+            </button>
+            <Link to="/RegisterForm">
+              <div variant="outlined" className="teamsList">
+                "Sign Up"
+              </div>
+            </Link>
+          </form>
+        </div>
       </div>
-    </div>
+    </ImageBackground>
   );
 };
 export default Login;
