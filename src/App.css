@@ -1,0 +1,100 @@
+
+.tables {
+    width: 100%;
+    background-color: blue;
+}
+.headers{
+  width: 100%;
+  text-align: center;
+  background: #1abc9c;
+  padding-top: 60px;
+  padding-bottom: 60px;
+
+}
+.headerText{
+  font-size: 80px;
+  color: white;
+  font-family: fantasy;
+  padding: 10px;
+}
+.bodyStyle{
+  width: 100%;
+  text-align: center;
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+.teamSelection{
+color: white;
+font-size: 60px;
+}
+.teamSection{
+  text-align: center;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.teamsList{
+color: white;
+font-size: 40px;
+padding: 10px;
+}
+.buttonGroup{
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 100px;
+  justify-content: center;
+}
+.button{
+color: white;
+  background-color: rgb(71, 70, 70);
+  font-size: 15px;
+  height: 25px;
+  width: 70px;
+}
+.newTeam{
+  color: white;
+font-size: 25px;
+padding: 10px;
+}
+.footer{
+  width: 100%;
+  text-align: center;
+  align-content: flex-end;
+  position: fixed;
+  bottom: 0;
+}
+.footerText{
+  font-size: 20px;
+  color: white;
+  padding: 10px;
+}
+.teamRoster{
+  width: 100%;
+  display: flex;
+  text-align: center;
+  padding: 20px;
+  justify-content: center;
+
+}
+.teamRosterHeader{
+  background-color: rgb(146, 193, 255);
+  border: 3px solid black;
+
+}
+.teamRosterHeaderText{
+  font-size: 50px;
+  border: 3px solid black;
+
+  width: 11rem;
+  color: black;
+} 
+.teamRosterHeaderEdit {
+  width:3rem ;
+    font-size: 15px;
+    justify-content: center;
+    display: flex;
+    background-color: rgb(172, 171, 171);
+
+}
