@@ -9,7 +9,6 @@ A React x Expo Go application to assist coaches in taking player statistics and 
 Started off creating an Expo Go x React application that is currently aimed towards a web application, but has the flexibility to eventually become a moblie app. I created a Firebase Database and started with connecting the authentication to the Login screen of this app! 
 
 ## Optimizations
-*(optional)*
 
 Eventually this application can be extended to other sports! 
 
