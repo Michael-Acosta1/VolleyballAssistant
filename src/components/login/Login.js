@@ -24,6 +24,7 @@ import { loginUser } from "./Authentication/emailAuth";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/images";
 import { ImageBackground } from "react-native";
+import { useState } from "react";
 
 // Login using email/password
 
@@ -65,12 +66,17 @@ const logout = async () => {
 
 const Login = () => {
   let navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const loginEmailPassword = () => {
     const loginEmail = txtEmail.value;
     const loginPassword = txtPassword.value;
     console.log("GOT HEREEEE", auth, loginEmail, loginPassword);
-    loginUser(loginEmail, loginPassword, navigate);
+    loginUser(loginEmail, loginPassword, navigate).then((message) => {
+      if (message) {
+        setErrorMessage(message);
+      }
+    });
   };
 
   return (
@@ -93,11 +99,13 @@ const Login = () => {
               <input id="txtPassword" type="password" />
               <label>Password</label>
             </div>
-            <div id="divLoginError" class="group">
-              <div id="lblLoginErrorMessage" class="errorlabel">
-                Error message
+            {errorMessage && (
+              <div id="divLoginError" class="group">
+                <div id="lblLoginErrorMessage" class="errorlabel">
+                  {errorMessage}
+                </div>
               </div>
-            </div>
+            )}
             <button
               onClick={loginEmailPassword}
               type="button"
@@ -107,7 +115,7 @@ const Login = () => {
             </button>
             <Link to="/RegisterForm">
               <div variant="outlined" className="teamsList">
-                "Sign Up"
+                Register
               </div>
             </Link>
           </form>

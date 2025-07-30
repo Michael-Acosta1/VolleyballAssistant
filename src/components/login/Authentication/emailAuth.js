@@ -39,6 +39,6 @@ export const loginUser = async (email, password, navigate) => {
     }
     navigate("/Home");
   } catch (error) {
-    console.log("Error", error);
+    return "Invalid Username or Password";
   }
 };

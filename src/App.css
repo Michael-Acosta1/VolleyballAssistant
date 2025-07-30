@@ -38,9 +38,10 @@ font-size: 60px;
   justify-content: center;
 }
 .teamsList{
-color: white;
+color: black;
 font-size: 40px;
 padding: 10px;
+text-align: center;
 }
 .buttonGroup{
   align-items: center;
