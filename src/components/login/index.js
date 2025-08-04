@@ -1,5 +1,14 @@
 import { getApps, getApp, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  collection,
+  CollectionReference,
+  getDocs,
+  getFirestore,
+  onSnapshot,
+  doc,
+  query,
+} from "firebase/firestore";
 // Your web app's Firebase configuration
 const firebaseApp = getApps().length
   ? getApp()
@@ -12,4 +21,29 @@ const firebaseApp = getApps().length
       appId: "1:886069125966:web:6346f7fda8d688c402341f",
     });
 const auth = getAuth(firebaseApp);
-export { auth };
+const db = getFirestore(firebaseApp);
+let uid;
+const monitorAuthState = async () => {
+  onAuthStateChanged(auth, (user) => {
+    if (user == null) {
+      return;
+    }
+    uid = user.uid;
+    console.log("UID: ", uid.uid);
+    getCollectionData(uid);
+  });
+};
+monitorAuthState();
+
+const dbData = [];
+const getCollectionData = async (uid) => {
+  let q = collection(db, `users`);
+  const userData = await getDocs(q);
+  userData.forEach((doc) => {
+    console.log("user", uid, "db: ", doc.data(), doc.id);
+    dbData.push(doc.data());
+  });
+  console.log("dbData here", userData);
+};
+
+export { auth, db, dbData, uid };

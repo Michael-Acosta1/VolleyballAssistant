@@ -18,13 +18,18 @@ import {
   btnLogout,
 } from "./ui";
 import { Link } from "react-router-dom";
-import { auth } from ".";
+import { auth, db } from ".";
 import { RegisterForm } from "./RegisterForm";
 import { loginUser } from "./Authentication/emailAuth";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/images";
 import { ImageBackground } from "react-native";
 import { useState } from "react";
+import {
+  collection,
+  CollectionReference,
+  onSnapshot,
+} from "firebase/firestore";
 
 // Login using email/password
 
@@ -41,23 +46,31 @@ const createAccount = async () => {
   }
 };
 
-// // Monitor auth state
-// const monitorAuthState = async () => {
-//   onAuthStateChanged(auth, (user) => {
-//     if (user) {
-//       console.log(user);
-//       showApp();
-//       showLoginState(user);
+// Monitor auth state
+const monitorAuthState = async () => {
+  onAuthStateChanged(auth, (user) => {
+    console.log("got the AUTH");
+    if (user == null) {
+      return;
+    }
+    const { uid } = user;
+    const userData = collection(db, `users/${uid}/teams`);
+    console.log("user", uid, "db: ", userData);
+    createStream(userData);
+    //showApp();
+    //showLoginState(user);
 
-//       hideLoginError();
-//       hideLinkError();
-//     } else {
-//       showLoginForm();
-//       lblAuthState.innerHTML = `You're not logged in.`;
-//     }
-//   });
-// };
-// monitorAuthState();
+    //hideLoginError();
+    // hideLinkError();
+  });
+};
+//monitorAuthState();
+const createStream = () => {
+  return onSnapshot(ref, (snapshot) => {
+    const teamData = snapshot.docs.map((d) => d.data);
+    console.log("snapshot", teamData);
+  });
+};
 
 // Log out
 const logout = async () => {

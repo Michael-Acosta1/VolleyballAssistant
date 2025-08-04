@@ -1,21 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Link } from "react-router-dom";
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Button, DataTable } from "react-native-paper";
-import TeamRoster from "./TeamRoster";
+import { Text, TextInput, TouchableOpacity } from "react-native";
+import { Button } from "react-native-paper";
 import Header from "./components/Header";
+import { dbData } from "./components/login";
 
 const HomepageBody = ({ existingTeamNames, handleRemoveTeam }) => {
+  console.log(existingTeamNames.length);
   if (existingTeamNames.length) {
     return (
       <section>
@@ -23,12 +16,13 @@ const HomepageBody = ({ existingTeamNames, handleRemoveTeam }) => {
           <div className="teamSelection">Select Existing Team</div>
         </div>
         {existingTeamNames.map((teamName) => {
+          console.log(teamName);
           return (
             <>
               <div className="teamSection">
                 <Link to="/TeamRoster" state={{ teamName: teamName }}>
                   <div variant="outlined" className="teamsList">
-                    {teamName.text}
+                    {teamName}
                   </div>
                 </Link>
 
@@ -104,12 +98,19 @@ function HomepageFooter() {
 
 const Home = () => {
   const [text, setText] = useState("");
-  const [todos, setTodos] = useState([]);
-  const [existingTeamNames, setExistingTeamNames] = useState([
-    { id: 1, text: "UT" },
-    { id: 2, text: "A&M" },
-  ]);
-  let items = ["setter", "OH", "RS", "MB", "Lib"];
+  const [existingTeamNames, setExistingTeamNames] = useState([]);
+  //useEffect to only render ExistingTeams the data if dbData changes
+  useEffect(() => {
+    //temporary array to get the list of Teams
+    let tempArray = [];
+    console.log("dbdata:", dbData, "dbTeams, ", dbData[0].teams);
+    Object.keys(dbData[0].teams).map((key) => {
+      tempArray.push(key);
+    });
+    setExistingTeamNames(tempArray);
+  }, [dbData]);
+
+  console.log(existingTeamNames);
   const [newTeamCounter, setNewTeamCounter] = useState(0);
 
   const handleButtonClick = () => {
@@ -131,9 +132,7 @@ const Home = () => {
     console.log(selectedTeamName);
     console.log("b4: ", existingTeamNames);
 
-    setExistingTeamNames((l) =>
-      l.filter((item) => item.text !== selectedTeamName.text)
-    );
+    setExistingTeamNames((l) => l.filter((item) => item !== selectedTeamName));
     console.log("now", existingTeamNames);
   };
 
