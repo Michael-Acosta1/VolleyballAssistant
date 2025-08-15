@@ -3,10 +3,8 @@ import { useState } from "react";
 
 export const EditRosterModal = ({ onSubmit, onCancel, player }) => {
   const [tempPlayer, setTempPlayer] = useState(player);
-
+  const [rosterModalOpen, setRosterModalOpen] = useState(false);
   console.log("players info in roster modal", tempPlayer);
-  //tempPlayer[1].Jersey = 111;
-  console.log("players info now", tempPlayer);
 
   const handleFirstNameChange = (event) => {
     setTempPlayer((prevData) => ({
@@ -78,68 +76,84 @@ export const EditRosterModal = ({ onSubmit, onCancel, player }) => {
   };
 
   return (
-    <div className="rosterModal-container">
-      <div className="rosterModal">
-        <div className="rosterModal-header">
-          <h1>Edit {player[1].FirstName}'s Information</h1>
+    <div>
+      <button
+        className="teamRosterHeaderEdit"
+        onClick={() => setRosterModalOpen(true)}
+      >
+        edit
+      </button>
+      {rosterModalOpen && (
+        <div className="rosterModal-container">
+          <div className="rosterModal">
+            <div className="rosterModal-header">
+              <h1>Edit {player[1].FirstName}'s Information</h1>
+            </div>
+            <div className="rosterModal-body">
+              <div className="inputLabel">
+                First Name:
+                <input
+                  style={{ textAlign: "center" }}
+                  type="text"
+                  value={tempPlayer[1].FirstName}
+                  onChange={handleFirstNameChange}
+                />
+              </div>
+              <div className="inputLabel">
+                Last Name:
+                <input
+                  style={{ textAlign: "center" }}
+                  type="text"
+                  value={tempPlayer[1].LastName}
+                  onChange={handleLastNameChange}
+                />
+              </div>
+              <div className="inputLabel">
+                Jersey #:
+                <input
+                  style={{ textAlign: "center" }}
+                  type="number"
+                  value={tempPlayer[1].Jersey}
+                  onChange={handleJerseyChange}
+                  onBlur={handleBlurJerseyChange}
+                />
+              </div>
+              <div className="inputLabel">
+                Primary Position:
+                <input
+                  style={{ textAlign: "center" }}
+                  type="text"
+                  value={tempPlayer[1].PrimaryPosition}
+                  onChange={handlePrimaryPositionChange}
+                />
+              </div>
+              <div className="inputLabel">
+                SecondaryPosition
+                <input
+                  style={{ textAlign: "center" }}
+                  type="text"
+                  value={tempPlayer[1].SecondaryPosition}
+                  onChange={handleSecondaryPositionChange}
+                />
+              </div>
+            </div>
+            <div className="rosterModal-footer">
+              <button
+                className="btn btn-cancel"
+                onClick={() => onCancel(setRosterModalOpen)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-save"
+                onClick={() => onSubmit(tempPlayer, setRosterModalOpen)}
+              >
+                Save
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="rosterModal-body">
-          <div className="inputLabel">
-            First Name:
-            <input
-              style={{ textAlign: "center" }}
-              type="text"
-              value={tempPlayer[1].FirstName}
-              onChange={handleFirstNameChange}
-            />
-          </div>
-          <div className="inputLabel">
-            Last Name:
-            <input
-              style={{ textAlign: "center" }}
-              type="text"
-              value={tempPlayer[1].LastName}
-              onChange={handleLastNameChange}
-            />
-          </div>
-          <div className="inputLabel">
-            Jersey #:
-            <input
-              style={{ textAlign: "center" }}
-              type="number"
-              value={tempPlayer[1].Jersey}
-              onChange={handleJerseyChange}
-              onBlur={handleBlurJerseyChange}
-            />
-          </div>
-          <div className="inputLabel">
-            Primary Position:
-            <input
-              style={{ textAlign: "center" }}
-              type="text"
-              value={tempPlayer[1].PrimaryPosition}
-              onChange={handlePrimaryPositionChange}
-            />
-          </div>
-          <div className="inputLabel">
-            SecondaryPosition
-            <input
-              style={{ textAlign: "center" }}
-              type="text"
-              value={tempPlayer[1].SecondaryPosition}
-              onChange={handleSecondaryPositionChange}
-            />
-          </div>
-        </div>
-        <div className="rosterModal-footer">
-          <button className="btn btn-cancel" onClick={() => onCancel()}>
-            Cancel
-          </button>
-          <button className="btn btn-save" onClick={() => onSubmit(tempPlayer)}>
-            Save
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

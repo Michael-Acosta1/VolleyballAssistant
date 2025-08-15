@@ -6,6 +6,7 @@ import { Text, TextInput, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import Header from "./components/Header";
 import { useGlobalData } from "./components/GlobalContext";
+import { db } from "./components/login";
 
 const HomepageBody = ({
   existingTeamNames,
@@ -111,20 +112,22 @@ const Home = () => {
   const [text, setText] = useState("");
   const { dbDatas, setDbdatas } = useGlobalData();
 
-  const [teams, setTeamData] = useState(dbDatas.teams);
-  console.log("database data in home:", dbDatas.teams);
+  const [teams, setTeamData] = useState([]);
+  console.log("database data in home:", dbDatas, Object.keys(dbDatas).length);
 
   const [existingTeamNames, setExistingTeamNames] = useState([]);
   //useEffect to only render ExistingTeams the data if dbData changes
   useEffect(() => {
     //temporary array to get the list of Teams
-    let tempArray = [];
-
-    Object.keys(teams).map((key) => {
-      tempArray.push(key);
-    });
-    setExistingTeamNames(tempArray);
-  }, [teams]);
+    if (Object.keys(dbDatas).length > 0) {
+      setTeamData(dbDatas.teams);
+      let tempArray = [];
+      Object.keys(dbDatas.teams).map((key) => {
+        tempArray.push(key);
+      });
+      setExistingTeamNames(tempArray);
+    }
+  }, [dbDatas]);
 
   console.log("existing: ", existingTeamNames);
   const [newTeamCounter, setNewTeamCounter] = useState(0);
@@ -160,12 +163,15 @@ const Home = () => {
     <div className="tables">
       <main>
         <Header title={"Volleyball Assistant"} />
-        <HomepageBody
-          existingTeamNames={existingTeamNames}
-          handleRemoveTeam={handleRemoveTeam}
-          teams={teams}
-          //setTeamData={setTeamData}
-        />
+        {existingTeamNames && (
+          <HomepageBody
+            existingTeamNames={existingTeamNames}
+            handleRemoveTeam={handleRemoveTeam}
+            teams={teams}
+            //setTeamData={setTeamData}
+          />
+        )}
+
         <AddTeam
           text={text}
           onChangeText={handleTextChange}

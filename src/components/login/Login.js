@@ -24,7 +24,7 @@ import { loginUser } from "./Authentication/emailAuth";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/images";
 import { ImageBackground } from "react-native";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useGlobalData } from "../GlobalContext";
 import {
   collection,
@@ -57,7 +57,6 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { dbDatas, setDbdatas, uid, setUid } = useGlobalData();
 
-  //let uid;
   onAuthStateChanged(auth, (user) => {
     if (user == null) {
       return;
@@ -67,7 +66,7 @@ const Login = () => {
     getCollectionData(uid, dbDatas, setDbdatas);
   });
 
-  const loginEmailPassword = () => {
+  const loginEmailPassword = useCallback(() => {
     const loginEmail = txtEmail.value;
     const loginPassword = txtPassword.value;
     console.log("GOT HEREEEE", auth, loginEmail, loginPassword);
@@ -76,7 +75,7 @@ const Login = () => {
         setErrorMessage(message);
       }
     });
-  };
+  }, [auth]);
 
   return (
     <ImageBackground

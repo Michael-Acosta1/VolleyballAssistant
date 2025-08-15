@@ -12,7 +12,6 @@ const TeamRoster = () => {
   const { dbDatas, setDbdatas, uid } = useGlobalData();
   const teamName = [location.state.teamName];
   const [type, setType] = useState("");
-  const [rosterModalOpen, setRosterModalOpen] = useState(false);
 
   useEffect(() => {
     if (type === "updatePlayer") {
@@ -25,7 +24,7 @@ const TeamRoster = () => {
     }
   }, [dbDatas, type]);
 
-  const handleEditRoster = (player) => {
+  const handleEditRoster = (player, setRosterModalOpen) => {
     console.log("player", player, player[1]);
     setDbdatas((prevData) => ({
       ...prevData,
@@ -38,6 +37,9 @@ const TeamRoster = () => {
       },
     }));
     setType("updatePlayer");
+    setRosterModalOpen(false);
+  };
+  const handleCloseModal = (setRosterModalOpen) => {
     setRosterModalOpen(false);
   };
 
@@ -57,13 +59,6 @@ const TeamRoster = () => {
               console.log("team here", player, player[1].FirstName);
               return (
                 <tr className="teamRosterHeaderText" key={player.id}>
-                  {rosterModalOpen && (
-                    <EditRosterModal
-                      onSubmit={handleEditRoster}
-                      onCancel={() => setRosterModalOpen(false)}
-                      player={player}
-                    />
-                  )}
                   <td>{player[1].Jersey}</td>
                   <td>
                     {player[1].FirstName} {player[1].LastName.charAt(0)}
@@ -71,12 +66,12 @@ const TeamRoster = () => {
                   <td>{player[1].PrimaryPosition}</td>
                   <td>{player[1].SecondaryPosition}</td>
                   <td>
-                    <button
-                      className="teamRosterHeaderEdit"
-                      onClick={() => setRosterModalOpen(true)}
-                    >
-                      edit
-                    </button>
+                    <EditRosterModal
+                      key={player.id}
+                      onSubmit={handleEditRoster}
+                      onCancel={handleCloseModal}
+                      player={player}
+                    />
                   </td>
                 </tr>
               );
