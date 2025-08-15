@@ -1,52 +1,45 @@
 import "./App.css";
 import Header from "./components/Header";
 import { useLocation } from "react-router-dom";
-import { DataTable } from "react-native-paper";
-import { useState, useEffect } from "react";
-import { dbData, uid, db } from "./components/login";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { useState, useEffect, useCallback } from "react";
+import { useGlobalData } from "./components/GlobalContext";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "./components/login";
 
 const TeamRoster = () => {
-  // const [teams, setDbd] = useState(dbData[0].teams);
   let location = useLocation();
+  const { dbDatas, setDbdatas, uid } = useGlobalData();
   const teamName = [location.state.teamName];
-  const [teams, setTeamData] = useState(dbData[0].teams);
-
-  console.log("td", teams);
-  console.log("db", dbData);
+  const [type, setType] = useState("");
+  useEffect(() => {
+    if (type === "updatePlayer") {
+      let teams = dbDatas.teams;
+      console.log("testttt", teams);
+      setType("");
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
+    }
+  }, [dbDatas, type]);
 
   const handleEditRoster = async (player) => {
     console.log("player", player, player[1]);
-    console.log("teammmmm", teams);
-
-    // setDbd((prevData) => {
-    //   prevData[teamName][player[0]].FirstName = "Hello";
-    // });
-    setTeamData((prevData) => ({
+    setDbdatas((prevData) => ({
       ...prevData,
-      [teamName]: {
-        ...prevData[teamName],
-        ...newteam[teamName],
-      },
-    }));
-
-    const newteam = {
-      UT: {
-        JaredS: {
-          FirstName: "Jared",
-          Jersey: 12,
-          LastName: "S",
-          PrimaryPosition: "OH",
-          SecondaryPosition: "Lib",
+      teams: {
+        ...prevData.teams,
+        [teamName]: {
+          ...prevData.teams[teamName],
+          [player[0]]: {
+            ...prevData.teams[teamName][player[0]],
+            FirstName: "James",
+          },
         },
       },
-    };
-
-    console.log("testttt", teams);
-    await setDoc(doc(db, `users/`, uid), {
-      teams,
-    });
+    }));
+    setType("updatePlayer");
   };
+
   return (
     <div className="tables">
       <Header title={"Team Roster"} />
@@ -58,8 +51,8 @@ const TeamRoster = () => {
             <th className="teamRosterHeaderText">Position 1</th>
             <th className="teamRosterHeaderText">Position 2</th>
           </tr>
-          {teams &&
-            Object.entries(teams[teamName]).map((player) => {
+          {dbDatas &&
+            Object.entries(dbDatas.teams[teamName]).map((player) => {
               console.log("team here", player, player[1].FirstName);
               return (
                 <tr className="teamRosterHeaderText" key={player.id}>

@@ -18,13 +18,14 @@ import {
   btnLogout,
 } from "./ui";
 import { Link } from "react-router-dom";
-import { auth, db } from ".";
+import { auth, db, getCollectionData } from ".";
 import { RegisterForm } from "./RegisterForm";
 import { loginUser } from "./Authentication/emailAuth";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/images";
 import { ImageBackground } from "react-native";
 import { useState } from "react";
+import { useGlobalData } from "../GlobalContext";
 import {
   collection,
   CollectionReference,
@@ -46,32 +47,6 @@ const createAccount = async () => {
   }
 };
 
-// Monitor auth state
-const monitorAuthState = async () => {
-  onAuthStateChanged(auth, (user) => {
-    console.log("got the AUTH");
-    if (user == null) {
-      return;
-    }
-    const { uid } = user;
-    const userData = collection(db, `users/${uid}/teams`);
-    console.log("user", uid, "db: ", userData);
-    createStream(userData);
-    //showApp();
-    //showLoginState(user);
-
-    //hideLoginError();
-    // hideLinkError();
-  });
-};
-//monitorAuthState();
-const createStream = () => {
-  return onSnapshot(ref, (snapshot) => {
-    const teamData = snapshot.docs.map((d) => d.data);
-    console.log("snapshot", teamData);
-  });
-};
-
 // Log out
 const logout = async () => {
   await signOut(auth);
@@ -80,6 +55,17 @@ const logout = async () => {
 const Login = () => {
   let navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const { dbDatas, setDbdatas, uid, setUid } = useGlobalData();
+
+  //let uid;
+  onAuthStateChanged(auth, (user) => {
+    if (user == null) {
+      return;
+    }
+    setUid(user.uid);
+    console.log("UID: ", uid);
+    getCollectionData(uid, dbDatas, setDbdatas);
+  });
 
   const loginEmailPassword = () => {
     const loginEmail = txtEmail.value;

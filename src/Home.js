@@ -5,9 +5,14 @@ import { Link } from "react-router-dom";
 import { Text, TextInput, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import Header from "./components/Header";
-import { dbData } from "./components/login";
+import { useGlobalData } from "./components/GlobalContext";
 
-const HomepageBody = ({ existingTeamNames, handleRemoveTeam }) => {
+const HomepageBody = ({
+  existingTeamNames,
+  handleRemoveTeam,
+  teams,
+  //setTeamData,
+}) => {
   console.log(existingTeamNames.length);
   if (existingTeamNames.length) {
     return (
@@ -20,7 +25,13 @@ const HomepageBody = ({ existingTeamNames, handleRemoveTeam }) => {
           return (
             <>
               <div className="teamSection">
-                <Link to="/TeamRoster" state={{ teamName: teamName }}>
+                <Link
+                  to="/TeamRoster"
+                  state={{
+                    teamName: teamName,
+                    //td: teams,
+                  }}
+                >
                   <div variant="outlined" className="teamsList">
                     {teamName}
                   </div>
@@ -98,19 +109,24 @@ function HomepageFooter() {
 
 const Home = () => {
   const [text, setText] = useState("");
+  const { dbDatas, setDbdatas } = useGlobalData();
+
+  const [teams, setTeamData] = useState(dbDatas.teams);
+  console.log("database data in home:", dbDatas.teams);
+
   const [existingTeamNames, setExistingTeamNames] = useState([]);
   //useEffect to only render ExistingTeams the data if dbData changes
   useEffect(() => {
     //temporary array to get the list of Teams
     let tempArray = [];
-    console.log("dbdata:", dbData, "dbTeams, ", dbData[0].teams);
-    Object.keys(dbData[0].teams).map((key) => {
+
+    Object.keys(teams).map((key) => {
       tempArray.push(key);
     });
     setExistingTeamNames(tempArray);
-  }, [dbData]);
+  }, [teams]);
 
-  console.log(existingTeamNames);
+  console.log("existing: ", existingTeamNames);
   const [newTeamCounter, setNewTeamCounter] = useState(0);
 
   const handleButtonClick = () => {
@@ -147,6 +163,8 @@ const Home = () => {
         <HomepageBody
           existingTeamNames={existingTeamNames}
           handleRemoveTeam={handleRemoveTeam}
+          teams={teams}
+          //setTeamData={setTeamData}
         />
         <AddTeam
           text={text}

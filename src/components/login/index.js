@@ -9,6 +9,7 @@ import {
   doc,
   query,
 } from "firebase/firestore";
+import { useGlobalData } from "../GlobalContext";
 // Your web app's Firebase configuration
 const firebaseApp = getApps().length
   ? getApp()
@@ -22,28 +23,18 @@ const firebaseApp = getApps().length
     });
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
-let uid;
-const monitorAuthState = async () => {
-  onAuthStateChanged(auth, (user) => {
-    if (user == null) {
-      return;
-    }
-    uid = user.uid;
-    console.log("UID: ", uid.uid);
-    getCollectionData(uid);
-  });
-};
-monitorAuthState();
 
 const dbData = [];
-const getCollectionData = async (uid) => {
+const getCollectionData = async (uid, dbDatas, setDbdatas) => {
   let q = collection(db, `users`);
   const userData = await getDocs(q);
   userData.forEach((doc) => {
     console.log("user", uid, "db: ", doc.data(), doc.id);
     dbData.push(doc.data());
   });
-  console.log("dbData here", userData);
+  setDbdatas(dbData[0]);
+
+  console.log("dbdatas set: ", dbDatas);
 };
 
-export { auth, db, dbData, uid };
+export { auth, db, getCollectionData };
