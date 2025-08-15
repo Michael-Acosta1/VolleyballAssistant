@@ -5,12 +5,15 @@ import { useState, useEffect, useCallback } from "react";
 import { useGlobalData } from "./components/GlobalContext";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "./components/login";
+import { EditRosterModal } from "./components/teamRosterModal/RosterModal.js";
 
 const TeamRoster = () => {
   let location = useLocation();
   const { dbDatas, setDbdatas, uid } = useGlobalData();
   const teamName = [location.state.teamName];
   const [type, setType] = useState("");
+  const [rosterModalOpen, setRosterModalOpen] = useState(false);
+
   useEffect(() => {
     if (type === "updatePlayer") {
       let teams = dbDatas.teams;
@@ -22,7 +25,7 @@ const TeamRoster = () => {
     }
   }, [dbDatas, type]);
 
-  const handleEditRoster = async (player) => {
+  const handleEditRoster = (player) => {
     console.log("player", player, player[1]);
     setDbdatas((prevData) => ({
       ...prevData,
@@ -30,14 +33,12 @@ const TeamRoster = () => {
         ...prevData.teams,
         [teamName]: {
           ...prevData.teams[teamName],
-          [player[0]]: {
-            ...prevData.teams[teamName][player[0]],
-            FirstName: "James",
-          },
+          [player[0]]: player[1],
         },
       },
     }));
     setType("updatePlayer");
+    setRosterModalOpen(false);
   };
 
   return (
@@ -56,6 +57,13 @@ const TeamRoster = () => {
               console.log("team here", player, player[1].FirstName);
               return (
                 <tr className="teamRosterHeaderText" key={player.id}>
+                  {rosterModalOpen && (
+                    <EditRosterModal
+                      onSubmit={handleEditRoster}
+                      onCancel={() => setRosterModalOpen(false)}
+                      player={player}
+                    />
+                  )}
                   <td>{player[1].Jersey}</td>
                   <td>
                     {player[1].FirstName} {player[1].LastName.charAt(0)}
@@ -65,7 +73,7 @@ const TeamRoster = () => {
                   <td>
                     <button
                       className="teamRosterHeaderEdit"
-                      onClick={() => handleEditRoster(player)}
+                      onClick={() => setRosterModalOpen(true)}
                     >
                       edit
                     </button>
