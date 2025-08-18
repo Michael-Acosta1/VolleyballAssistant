@@ -41,7 +41,7 @@ const HomepageBody = ({
 
                 <div className="buttonGroup">
                   <button
-                    className="button"
+                    className="remove-button"
                     onClick={() => handleRemoveTeam(teamName)}
                   >
                     Remove
@@ -65,11 +65,13 @@ const AddTeam = ({
 }) => {
   return (
     <>
-      <div className="teamSection">
-        <Button onPress={() => setNewTeamCounter(1)}>
-          <Text>Create A New Team</Text>
-        </Button>
-      </div>
+      <button
+        type="button"
+        className="add-button"
+        onClick={() => setNewTeamCounter(1)}
+      >
+        Create A New Team
+      </button>
       {newTeamCounter == 1 && (
         <>
           <div className="teamSection">
@@ -79,8 +81,11 @@ const AddTeam = ({
               style={{
                 backgroundColor: "grey",
                 borderRadius: 5,
-                height: 40,
+                height: "40px",
+                width: "20rem",
                 paddingLeft: 20,
+                color: "white",
+                fontSize: "20px",
               }}
               placeholder="new team"
               onChangeText={onChangeText}
@@ -137,6 +142,12 @@ const Home = () => {
       setDoc(doc(db, `users/`, uid), {
         teams,
       });
+    } else if (type === "removeTeam") {
+      setType("");
+      console.log("Got inside Remvove", teams);
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
     }
   }, [existingTeamNames]);
 
@@ -171,9 +182,13 @@ const Home = () => {
   };
   const handleRemoveTeam = (selectedTeamName) => {
     console.log(selectedTeamName);
-    console.log("b4: ", existingTeamNames);
-
+    console.log("b4: ", dbDatas);
+    let d = dbDatas;
+    delete d.teams[selectedTeamName];
+    // console.log("after: ", d);
+    setDbdatas(d);
     setExistingTeamNames((l) => l.filter((item) => item !== selectedTeamName));
+    setType("removeTeam");
     console.log("now", existingTeamNames);
   };
 

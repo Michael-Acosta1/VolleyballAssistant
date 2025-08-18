@@ -14,9 +14,14 @@ const TeamRoster = () => {
   const [type, setType] = useState("");
 
   useEffect(() => {
+    let teams = dbDatas.teams;
+    console.log("teams now", teams);
     if (type === "updatePlayer") {
-      let teams = dbDatas.teams;
-      console.log("testttt", teams);
+      setType("");
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
+    } else if (type === "deletePlayer") {
       setType("");
       setDoc(doc(db, `users/`, uid), {
         teams,
@@ -25,7 +30,6 @@ const TeamRoster = () => {
   }, [dbDatas, type]);
 
   const handleEditRoster = (player, setRosterModalOpen) => {
-    console.log("player", player, player[1]);
     setDbdatas((prevData) => ({
       ...prevData,
       teams: {
@@ -37,6 +41,13 @@ const TeamRoster = () => {
       },
     }));
     setType("updatePlayer");
+    setRosterModalOpen(false);
+  };
+  const handleDeletePlayer = (player, setRosterModalOpen) => {
+    let d = dbDatas;
+    delete d.teams[teamName][player[0]];
+    setDbdatas(d);
+    setType("deletePlayer");
     setRosterModalOpen(false);
   };
   const handleCloseModal = (setRosterModalOpen) => {
@@ -88,6 +99,7 @@ const TeamRoster = () => {
                       key={player.id}
                       onSubmit={handleEditRoster}
                       onCancel={handleCloseModal}
+                      onDelete={handleDeletePlayer}
                       player={player}
                       teamName={teamName}
                     />

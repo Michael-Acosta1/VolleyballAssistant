@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export const RosterModal = ({
   onSubmit,
+  onDelete,
   onCancel,
   player,
   teamName,
@@ -128,6 +129,9 @@ export const RosterModal = ({
       {rosterModalOpen && (
         <div className="rosterModal-container">
           <div className="rosterModal">
+            <button className="btnC btn-cancel" onClick={() => handleClose()}>
+              X
+            </button>
             <div className="rosterModal-header">
               <h1>
                 {player.length > 0
@@ -184,8 +188,11 @@ export const RosterModal = ({
               </div>
             </div>
             <div className="rosterModal-footer">
-              <button className="btn btn-cancel" onClick={() => handleClose()}>
-                Cancel
+              <button
+                className="btn btn-delete"
+                onClick={() => onDelete(player, setRosterModalOpen)}
+              >
+                Delete Player
               </button>
               <button className="btn btn-save" onClick={() => handleSubmit()}>
                 Save
