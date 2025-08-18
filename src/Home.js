@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { Link } from "react-router-dom";
 import { Text, TextInput, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import Header from "./components/Header";
 import { useGlobalData } from "./components/GlobalContext";
+import { setDoc, doc } from "firebase/firestore";
 import { db } from "./components/login";
 
 const HomepageBody = ({
@@ -110,7 +111,8 @@ function HomepageFooter() {
 
 const Home = () => {
   const [text, setText] = useState("");
-  const { dbDatas, setDbdatas } = useGlobalData();
+  const { dbDatas, setDbdatas, uid } = useGlobalData();
+  const [type, setType] = useState("");
 
   const [teams, setTeamData] = useState([]);
   console.log("database data in home:", dbDatas, Object.keys(dbDatas).length);
@@ -118,6 +120,7 @@ const Home = () => {
   const [existingTeamNames, setExistingTeamNames] = useState([]);
   //useEffect to only render ExistingTeams the data if dbData changes
   useEffect(() => {
+    console.log("this ran during the homepage", dbDatas);
     //temporary array to get the list of Teams
     if (Object.keys(dbDatas).length > 0) {
       setTeamData(dbDatas.teams);
@@ -128,6 +131,14 @@ const Home = () => {
       setExistingTeamNames(tempArray);
     }
   }, [dbDatas]);
+  useEffect(() => {
+    if (type === "addTeam") {
+      setType("");
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
+    }
+  }, [existingTeamNames]);
 
   console.log("existing: ", existingTeamNames);
   const [newTeamCounter, setNewTeamCounter] = useState(0);
@@ -142,7 +153,18 @@ const Home = () => {
         const id = teamName.id + 1;
         newTeamName = { id, text };
       }
-      setExistingTeamNames([...existingTeamNames, newTeamName]);
+
+      setDbdatas((prevData) => ({
+        ...prevData,
+        teams: {
+          ...prevData.teams,
+          [newTeamName.text]: {},
+        },
+      }));
+      setType("addTeam");
+      console.log("dbdata now", dbDatas);
+
+      //setExistingTeamNames([...existingTeamNames, newTeamName.text]);
       setText("");
       setNewTeamCounter(0);
     }

@@ -1,7 +1,13 @@
 import "./RosterModal.css";
 import { useState } from "react";
 
-export const EditRosterModal = ({ onSubmit, onCancel, player }) => {
+export const RosterModal = ({
+  onSubmit,
+  onCancel,
+  player,
+  teamName,
+  addPlayer,
+}) => {
   const [tempPlayer, setTempPlayer] = useState(player);
   const [rosterModalOpen, setRosterModalOpen] = useState(false);
   console.log("players info in roster modal", tempPlayer);
@@ -35,6 +41,12 @@ export const EditRosterModal = ({ onSubmit, onCancel, player }) => {
       }));
     } else {
       const newJersey = Number(event.target.value);
+      if (addPlayer) {
+        setTempPlayer((prevData) => ({
+          ...prevData,
+          0: newJersey,
+        }));
+      }
       setTempPlayer((prevData) => ({
         ...prevData,
         1: {
@@ -75,19 +87,53 @@ export const EditRosterModal = ({ onSubmit, onCancel, player }) => {
     }));
   };
 
+  const handleClose = () => {
+    if (addPlayer) {
+      setTempPlayer({
+        0: "",
+        1: {
+          FirstName: "",
+          LastName: "",
+          Jersey: "",
+          PrimaryPosition: "",
+          SecondaryPosition: "",
+        },
+      });
+    }
+    onCancel(setRosterModalOpen);
+  };
+  const handleSubmit = () => {
+    onSubmit(tempPlayer, setRosterModalOpen, teamName);
+    if (addPlayer) {
+      setTempPlayer({
+        0: "",
+        1: {
+          FirstName: "",
+          LastName: "",
+          Jersey: "",
+          PrimaryPosition: "",
+          SecondaryPosition: "",
+        },
+      });
+    }
+  };
   return (
     <div>
       <button
         className="teamRosterHeaderEdit"
         onClick={() => setRosterModalOpen(true)}
       >
-        edit
+        {player.length > 0 ? "edit" : "add"}
       </button>
       {rosterModalOpen && (
         <div className="rosterModal-container">
           <div className="rosterModal">
             <div className="rosterModal-header">
-              <h1>Edit {player[1].FirstName}'s Information</h1>
+              <h1>
+                {player.length > 0
+                  ? `Edit ${player[1].FirstName}'s Information`
+                  : "Add New Player"}
+              </h1>
             </div>
             <div className="rosterModal-body">
               <div className="inputLabel">
@@ -138,16 +184,10 @@ export const EditRosterModal = ({ onSubmit, onCancel, player }) => {
               </div>
             </div>
             <div className="rosterModal-footer">
-              <button
-                className="btn btn-cancel"
-                onClick={() => onCancel(setRosterModalOpen)}
-              >
+              <button className="btn btn-cancel" onClick={() => handleClose()}>
                 Cancel
               </button>
-              <button
-                className="btn btn-save"
-                onClick={() => onSubmit(tempPlayer, setRosterModalOpen)}
-              >
+              <button className="btn btn-save" onClick={() => handleSubmit()}>
                 Save
               </button>
             </div>

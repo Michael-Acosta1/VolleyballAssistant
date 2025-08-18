@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useGlobalData } from "./components/GlobalContext";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "./components/login";
-import { EditRosterModal } from "./components/teamRosterModal/RosterModal.js";
+import { RosterModal } from "./components/teamRosterModal/RosterModal.js";
 
 const TeamRoster = () => {
   let location = useLocation();
@@ -53,6 +53,24 @@ const TeamRoster = () => {
             <th className="teamRosterHeaderText">Name</th>
             <th className="teamRosterHeaderText">Position 1</th>
             <th className="teamRosterHeaderText">Position 2</th>
+            <td>
+              <RosterModal
+                onSubmit={handleEditRoster}
+                onCancel={handleCloseModal}
+                player={{
+                  0: "",
+                  1: {
+                    FirstName: "",
+                    LastName: "",
+                    Jersey: "",
+                    PrimaryPosition: "",
+                    SecondaryPosition: "",
+                  },
+                }}
+                teamName={teamName}
+                addPlayer={true}
+              />
+            </td>
           </tr>
           {dbDatas &&
             Object.entries(dbDatas.teams[teamName]).map((player) => {
@@ -66,11 +84,12 @@ const TeamRoster = () => {
                   <td>{player[1].PrimaryPosition}</td>
                   <td>{player[1].SecondaryPosition}</td>
                   <td>
-                    <EditRosterModal
+                    <RosterModal
                       key={player.id}
                       onSubmit={handleEditRoster}
                       onCancel={handleCloseModal}
                       player={player}
+                      teamName={teamName}
                     />
                   </td>
                 </tr>
