@@ -18,12 +18,19 @@ import {
   btnLogout,
 } from "./ui";
 import { Link } from "react-router-dom";
-import { auth } from ".";
+import { auth, db, getCollectionData } from ".";
 import { RegisterForm } from "./RegisterForm";
 import { loginUser } from "./Authentication/emailAuth";
 import { useNavigate } from "react-router-dom";
 import images from "../assets/images";
 import { ImageBackground } from "react-native";
+import { useCallback, useState } from "react";
+import { useGlobalData } from "../GlobalContext";
+import {
+  collection,
+  CollectionReference,
+  onSnapshot,
+} from "firebase/firestore";
 
 // Login using email/password
 
@@ -40,24 +47,6 @@ const createAccount = async () => {
   }
 };
 
-// // Monitor auth state
-// const monitorAuthState = async () => {
-//   onAuthStateChanged(auth, (user) => {
-//     if (user) {
-//       console.log(user);
-//       showApp();
-//       showLoginState(user);
-
-//       hideLoginError();
-//       hideLinkError();
-//     } else {
-//       showLoginForm();
-//       lblAuthState.innerHTML = `You're not logged in.`;
-//     }
-//   });
-// };
-// monitorAuthState();
-
 // Log out
 const logout = async () => {
   await signOut(auth);
@@ -65,13 +54,28 @@ const logout = async () => {
 
 const Login = () => {
   let navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const { dbDatas, setDbdatas, uid, setUid } = useGlobalData();
 
-  const loginEmailPassword = () => {
+  onAuthStateChanged(auth, (user) => {
+    if (user == null) {
+      return;
+    }
+    setUid(user.uid);
+    console.log("UID: ", uid);
+    getCollectionData(uid, dbDatas, setDbdatas);
+  });
+
+  const loginEmailPassword = useCallback(() => {
     const loginEmail = txtEmail.value;
     const loginPassword = txtPassword.value;
     console.log("GOT HEREEEE", auth, loginEmail, loginPassword);
-    loginUser(loginEmail, loginPassword, navigate);
-  };
+    loginUser(loginEmail, loginPassword, navigate).then((message) => {
+      if (message) {
+        setErrorMessage(message);
+      }
+    });
+  }, [auth]);
 
   return (
     <ImageBackground
@@ -93,11 +97,13 @@ const Login = () => {
               <input id="txtPassword" type="password" />
               <label>Password</label>
             </div>
-            <div id="divLoginError" class="group">
-              <div id="lblLoginErrorMessage" class="errorlabel">
-                Error message
+            {errorMessage && (
+              <div id="divLoginError" class="group">
+                <div id="lblLoginErrorMessage" class="errorlabel">
+                  {errorMessage}
+                </div>
               </div>
-            </div>
+            )}
             <button
               onClick={loginEmailPassword}
               type="button"
@@ -107,7 +113,7 @@ const Login = () => {
             </button>
             <Link to="/RegisterForm">
               <div variant="outlined" className="teamsList">
-                "Sign Up"
+                Register
               </div>
             </Link>
           </form>

@@ -1,30 +1,60 @@
 import "./App.css";
 import Header from "./components/Header";
 import { useLocation } from "react-router-dom";
-import { DataTable } from "react-native-paper";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useGlobalData } from "./components/GlobalContext";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "./components/login";
+import { RosterModal } from "./components/teamRosterModal/RosterModal.js";
+import { Link } from "react-router-dom";
+
 const TeamRoster = () => {
   let location = useLocation();
-  const teamName = [location.state.teamName.text];
+  const { dbDatas, setDbdatas, uid } = useGlobalData();
+  const teamName = [location.state.teamName];
+  const [type, setType] = useState("");
 
-  const [teamData, setTeamData] = useState([]);
-  const tempUTdata = [
-    { name: "Dorian", jersey: "1", position: "middle" },
-    { name: "Alex", jersey: "12", position: "RS" },
-  ];
   useEffect(() => {
-    if (teamName == "UT") {
-      setTeamData(tempUTdata);
+    let teams = dbDatas.teams;
+    console.log("teams now", teams);
+    if (type === "updatePlayer") {
+      setType("");
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
+    } else if (type === "deletePlayer") {
+      setType("");
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
     }
-  }, []);
+  }, [dbDatas, type]);
 
-  const handleEditRoster = (player) => {
-    console.log("player", player);
-    let tee = teamData.filter((item) => item.jersey !== player.jersey);
-    console.log("tttttt: ", tee);
-    tee.push({ name: "Jake", jersey: "1", position: "middRSle" });
-    setTeamData(tee);
+  const handleEditRoster = (player, setRosterModalOpen) => {
+    setDbdatas((prevData) => ({
+      ...prevData,
+      teams: {
+        ...prevData.teams,
+        [teamName]: {
+          ...prevData.teams[teamName],
+          [player[0]]: player[1],
+        },
+      },
+    }));
+    setType("updatePlayer");
+    setRosterModalOpen(false);
   };
+  const handleDeletePlayer = (player, setRosterModalOpen) => {
+    let d = dbDatas;
+    delete d.teams[teamName][player[0]];
+    setDbdatas(d);
+    setType("deletePlayer");
+    setRosterModalOpen(false);
+  };
+  const handleCloseModal = (setRosterModalOpen) => {
+    setRosterModalOpen(false);
+  };
+
   return (
     <div className="tables">
       <Header title={"Team Roster"} />
@@ -33,28 +63,65 @@ const TeamRoster = () => {
           <tr>
             <th className="teamRosterHeaderText">Jersey #</th>
             <th className="teamRosterHeaderText">Name</th>
-            <th className="teamRosterHeaderText">Position</th>
+            <th className="teamRosterHeaderText">Position 1</th>
+            <th className="teamRosterHeaderText">Position 2</th>
+            <td>
+              <RosterModal
+                onSubmit={handleEditRoster}
+                onCancel={handleCloseModal}
+                player={{
+                  0: "",
+                  1: {
+                    FirstName: "",
+                    LastName: "",
+                    Jersey: "",
+                    PrimaryPosition: "",
+                    SecondaryPosition: "",
+                  },
+                }}
+                teamName={teamName}
+                addPlayer={true}
+              />
+            </td>
           </tr>
-          {teamData &&
-            teamData.map((player) => {
-              console.log("team here", player);
+          {dbDatas &&
+            Object.entries(dbDatas.teams[teamName]).map((player) => {
+              console.log("team here", player, player[1].FirstName);
               return (
                 <tr className="teamRosterHeaderText" key={player.id}>
-                  <td>{player.jersey}</td>
-                  <td>{player.name}</td>
-                  <td>{player.position}</td>
+                  <td>{player[1].Jersey}</td>
                   <td>
-                    <button
-                      className="teamRosterHeaderEdit"
-                      onClick={() => handleEditRoster(player)}
-                    >
-                      edit
-                    </button>
+                    {player[1].FirstName} {player[1].LastName.charAt(0)}
+                  </td>
+                  <td>{player[1].PrimaryPosition}</td>
+                  <td>{player[1].SecondaryPosition}</td>
+                  <td>
+                    <RosterModal
+                      key={player.id}
+                      onSubmit={handleEditRoster}
+                      onCancel={handleCloseModal}
+                      onDelete={handleDeletePlayer}
+                      player={player}
+                      teamName={teamName}
+                    />
                   </td>
                 </tr>
               );
             })}
         </table>
+      </div>
+      <div className="footer">
+        <Link
+          to="/TeamGames"
+          state={{
+            teamName: teamName,
+            //td: teams,
+          }}
+        >
+          <button className="navToGames" onClick={() => handleSubmit()}>
+            Games
+          </button>
+        </Link>
       </div>
     </div>
   );

@@ -1,21 +1,21 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { Link } from "react-router-dom";
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Button, DataTable } from "react-native-paper";
-import TeamRoster from "./TeamRoster";
+import { Text, TextInput, TouchableOpacity } from "react-native";
+import { Button } from "react-native-paper";
 import Header from "./components/Header";
+import { useGlobalData } from "./components/GlobalContext";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "./components/login";
 
-const HomepageBody = ({ existingTeamNames, handleRemoveTeam }) => {
+const HomepageBody = ({
+  existingTeamNames,
+  handleRemoveTeam,
+  teams,
+  //setTeamData,
+}) => {
+  console.log(existingTeamNames.length);
   if (existingTeamNames.length) {
     return (
       <section>
@@ -23,18 +23,25 @@ const HomepageBody = ({ existingTeamNames, handleRemoveTeam }) => {
           <div className="teamSelection">Select Existing Team</div>
         </div>
         {existingTeamNames.map((teamName) => {
+          console.log(teamName);
           return (
             <>
               <div className="teamSection">
-                <Link to="/TeamRoster" state={{ teamName: teamName }}>
+                <Link
+                  to="/TeamRoster"
+                  state={{
+                    teamName: teamName,
+                    //td: teams,
+                  }}
+                >
                   <div variant="outlined" className="teamsList">
-                    {teamName.text}
+                    {teamName}
                   </div>
                 </Link>
 
                 <div className="buttonGroup">
                   <button
-                    className="button"
+                    className="remove-button"
                     onClick={() => handleRemoveTeam(teamName)}
                   >
                     Remove
@@ -58,11 +65,13 @@ const AddTeam = ({
 }) => {
   return (
     <>
-      <div className="teamSection">
-        <Button onPress={() => setNewTeamCounter(1)}>
-          <Text>Create A New Team</Text>
-        </Button>
-      </div>
+      <button
+        type="button"
+        className="add-button"
+        onClick={() => setNewTeamCounter(1)}
+      >
+        Create A New Team
+      </button>
       {newTeamCounter == 1 && (
         <>
           <div className="teamSection">
@@ -72,8 +81,11 @@ const AddTeam = ({
               style={{
                 backgroundColor: "grey",
                 borderRadius: 5,
-                height: 40,
+                height: "40px",
+                width: "20rem",
                 paddingLeft: 20,
+                color: "white",
+                fontSize: "20px",
               }}
               placeholder="new team"
               onChangeText={onChangeText}
@@ -104,12 +116,42 @@ function HomepageFooter() {
 
 const Home = () => {
   const [text, setText] = useState("");
-  const [todos, setTodos] = useState([]);
-  const [existingTeamNames, setExistingTeamNames] = useState([
-    { id: 1, text: "UT" },
-    { id: 2, text: "A&M" },
-  ]);
-  let items = ["setter", "OH", "RS", "MB", "Lib"];
+  const { dbDatas, setDbdatas, uid } = useGlobalData();
+  const [type, setType] = useState("");
+
+  const [teams, setTeamData] = useState([]);
+  console.log("database data in home:", dbDatas, Object.keys(dbDatas).length);
+
+  const [existingTeamNames, setExistingTeamNames] = useState([]);
+  //useEffect to only render ExistingTeams the data if dbData changes
+  useEffect(() => {
+    console.log("this ran during the homepage", dbDatas);
+    //temporary array to get the list of Teams
+    if (Object.keys(dbDatas).length > 0) {
+      setTeamData(dbDatas.teams);
+      let tempArray = [];
+      Object.keys(dbDatas.teams).map((key) => {
+        tempArray.push(key);
+      });
+      setExistingTeamNames(tempArray);
+    }
+  }, [dbDatas]);
+  useEffect(() => {
+    if (type === "addTeam") {
+      setType("");
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
+    } else if (type === "removeTeam") {
+      setType("");
+      console.log("Got inside Remvove", teams);
+      setDoc(doc(db, `users/`, uid), {
+        teams,
+      });
+    }
+  }, [existingTeamNames]);
+
+  console.log("existing: ", existingTeamNames);
   const [newTeamCounter, setNewTeamCounter] = useState(0);
 
   const handleButtonClick = () => {
@@ -122,18 +164,31 @@ const Home = () => {
         const id = teamName.id + 1;
         newTeamName = { id, text };
       }
-      setExistingTeamNames([...existingTeamNames, newTeamName]);
+
+      setDbdatas((prevData) => ({
+        ...prevData,
+        teams: {
+          ...prevData.teams,
+          [newTeamName.text]: {},
+        },
+      }));
+      setType("addTeam");
+      console.log("dbdata now", dbDatas);
+
+      //setExistingTeamNames([...existingTeamNames, newTeamName.text]);
       setText("");
       setNewTeamCounter(0);
     }
   };
   const handleRemoveTeam = (selectedTeamName) => {
     console.log(selectedTeamName);
-    console.log("b4: ", existingTeamNames);
-
-    setExistingTeamNames((l) =>
-      l.filter((item) => item.text !== selectedTeamName.text)
-    );
+    console.log("b4: ", dbDatas);
+    let d = dbDatas;
+    delete d.teams[selectedTeamName];
+    // console.log("after: ", d);
+    setDbdatas(d);
+    setExistingTeamNames((l) => l.filter((item) => item !== selectedTeamName));
+    setType("removeTeam");
     console.log("now", existingTeamNames);
   };
 
@@ -145,10 +200,15 @@ const Home = () => {
     <div className="tables">
       <main>
         <Header title={"Volleyball Assistant"} />
-        <HomepageBody
-          existingTeamNames={existingTeamNames}
-          handleRemoveTeam={handleRemoveTeam}
-        />
+        {existingTeamNames && (
+          <HomepageBody
+            existingTeamNames={existingTeamNames}
+            handleRemoveTeam={handleRemoveTeam}
+            teams={teams}
+            //setTeamData={setTeamData}
+          />
+        )}
+
         <AddTeam
           text={text}
           onChangeText={handleTextChange}
