@@ -5,6 +5,7 @@ import Home from "./Home";
 import Login from "./components/login/Login";
 import TeamRoster from "./TeamRoster";
 import RegisterForm from "./components/login/RegisterForm";
+import TeamGames from "./components/teamGames/TeamGames";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/Home" element={<Home />} />
         <Route path="/TeamRoster" element={<TeamRoster />} />
         <Route path="/RegisterForm" element={<RegisterForm />} />
+        <Route path="/TeamGames" element={<TeamGames />} />
       </Routes>
     </GlobalWrapper>
   );

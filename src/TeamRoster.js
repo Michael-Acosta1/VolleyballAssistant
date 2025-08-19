@@ -6,6 +6,7 @@ import { useGlobalData } from "./components/GlobalContext";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "./components/login";
 import { RosterModal } from "./components/teamRosterModal/RosterModal.js";
+import { Link } from "react-router-dom";
 
 const TeamRoster = () => {
   let location = useLocation();
@@ -108,6 +109,19 @@ const TeamRoster = () => {
               );
             })}
         </table>
+      </div>
+      <div className="footer">
+        <Link
+          to="/TeamGames"
+          state={{
+            teamName: teamName,
+            //td: teams,
+          }}
+        >
+          <button className="navToGames" onClick={() => handleSubmit()}>
+            Games
+          </button>
+        </Link>
       </div>
     </div>
   );

@@ -161,7 +161,7 @@ export const RosterModal = ({
               <div className="inputLabel">
                 Jersey #:
                 <input
-                  style={{ textAlign: "center" }}
+                  style={{ textAlign: "center", paddingLeft: "20px" }}
                   type="number"
                   value={tempPlayer[1].Jersey}
                   onChange={handleJerseyChange}
@@ -169,22 +169,36 @@ export const RosterModal = ({
                 />
               </div>
               <div className="inputLabel">
-                Primary Position:
-                <input
-                  style={{ textAlign: "center" }}
-                  type="text"
+                <div style={{ paddingBottom: "4px" }}>Primary Position:</div>
+                <select
+                  id="my-select"
                   value={tempPlayer[1].PrimaryPosition}
                   onChange={handlePrimaryPositionChange}
-                />
+                  className="positionDropdown"
+                >
+                  <option value="">Select a Position</option>
+                  <option value="OH">Outside Hitter</option>
+                  <option value="RS">Rightside Hitter</option>
+                  <option value="MB">Middle Blocker</option>
+                  <option value="S">Setter</option>
+                  <option value="L">Libero</option>
+                </select>
               </div>
               <div className="inputLabel">
-                SecondaryPosition
-                <input
-                  style={{ textAlign: "center" }}
-                  type="text"
+                <div style={{ paddingBottom: "4px" }}>SecondaryPosition:</div>
+                <select
+                  id="my-select"
                   value={tempPlayer[1].SecondaryPosition}
                   onChange={handleSecondaryPositionChange}
-                />
+                  className="positionDropdown"
+                >
+                  <option value="">Select a Position</option>
+                  <option value="OH">Outside Hitter</option>
+                  <option value="RS">Rightside Hitter</option>
+                  <option value="MB">Middle Blocker</option>
+                  <option value="S">Setter</option>
+                  <option value="L">Libero</option>
+                </select>
               </div>
             </div>
             <div className="rosterModal-footer">

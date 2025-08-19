@@ -18,6 +18,11 @@
 }
 .inputLabel{
     font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 3px;
 }
 .btn{
     border: none;
@@ -62,4 +67,10 @@
     display: flex;
     justify-content: space-evenly;
 }
+.positionDropdown{
+    text-align: center;
+    font-size: 1rem; 
+    width: 100%;
+    padding-left: 10px;
 
+}

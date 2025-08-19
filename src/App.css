@@ -123,3 +123,22 @@ padding: 10px;
     background-color: rgb(172, 171, 171);
 
 }
+.navToGames{
+  width: 20rem;
+  position: relative;
+  padding: 12px 24px;
+  margin: .3em 0 1em 0;
+  vertical-align: middle;
+  color: #080808a9;
+  font-size: 25px;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  letter-spacing: 1px;
+  background: gainsboro;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0px 5px 5px #ccc;
+
+}
