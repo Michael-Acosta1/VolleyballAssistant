@@ -1,4 +1,4 @@
-# My Awesome Project
+# Volleyball Assistant Application
 A React x Expo Go application to assist coaches in taking player statistics and provide a practice plan builder tool option.
 
 [Login Page](src/components/assets/VolleyAssistantLogin.jpg) [Home Page](src/components/assets/VolleyAssistantHome.jpg) [Roster Page](src/components/assets/VolleyAssistantRoster.jpg) [Edit Roster Modal](src/components/assets/VolleyAssistantRosterEditModal.jpg)
